@@ -1,0 +1,88 @@
+Creating a Database
+-------------------
+use bootcamp
+
+Creating collections in the Database
+------------------------------------
+db.createCollection("users")
+db.createCollection("codekata")
+db.createCollection("attendance")
+db.createCollection("topics")
+db.createCollection("tasks")
+db.createCollection("company_drives")
+db.createCollection("mentors")
+
+
+To Find all the topics and tasks taught in the month of October
+---------------------------------------------------------------
+db.topics.find({
+  "date": {
+    $gte: ISODate("2023-10-01T00:00:00Z"),
+    $lt: ISODate("2023-11-01T00:00:00Z")
+  }
+})
+
+
+
+To Find all the company drives that appeared between October 15, 2020, and October 31, 2020
+-------------------------------------------------------------------------------------------
+db.company_drives.find({
+  "date": {
+    $gte: ISODate("2020-10-15T00:00:00Z"),
+    $lte: ISODate("2020-10-31T23:59:59Z")
+  }
+})
+
+
+
+To Find all the company drives and students who appeared for the placement
+--------------------------------------------------------------------------
+db.company_drives.find({
+  "students_appeared": {
+    $exists: true
+  }
+})
+
+
+
+
+To Find the number of problems solved by a user in codekata
+-----------------------------------------------------------
+db.codekata.aggregate([
+  {
+    $match: {
+      "user_id": "USER_ID"
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      total_problems_solved: {
+        $sum: "$problems_solved"
+      }
+    }
+  }
+])
+
+
+To Find all the mentors with a mentee count greater than 15
+-----------------------------------------------------------
+db.mentors.find({
+  $expr: {
+    $gt: [{ $size: "$mentees" }, 15]
+  }
+})
+
+
+
+To Find the number of users who were absent and didn't submit the task between October 15, 2020, and October 31, 2020
+---------------------------------------------------------------------------------------------------------------------
+db.attendance.find({
+  "date": {
+    $gte: ISODate("2020-10-15T00:00:00Z"),
+    $lte: ISODate("2020-10-31T23:59:59Z")
+  },
+  "attendance_status": "absent",
+  "task_submitted": false
+}).count()
+ 
